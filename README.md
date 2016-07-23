@@ -97,7 +97,8 @@ window.addEventListener('scroll', function() {
 	window.requestAnimationFrame(updatePositions);
 });
 ```
-
+###### 3. reduce number of moving pizza
+Instead of 200 moving pizza, 32 is sufficient to achieve the same effect.
 
 
 
