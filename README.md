@@ -1,55 +1,104 @@
-## Website Performance Optimization portfolio project
+# Website Optimization
 
-Your challenge, if you wish to accept it (and we sure hope you will), is to optimize this online portfolio for speed! In particular, optimize the critical rendering path and make this page render as quickly as possible by applying the techniques you've picked up in the [Critical Rendering Path course](https://www.udacity.com/course/ud884).
+A project of Udacity's Front-End Web Developer Nanodegree. The task was to optimize a provided website with a number of optimization and performance-related issues so that it achieves a target PageSpeed score and runs at 60 frames per second.
 
-To get started, check out the repository and inspect the code.
+## File Structure
 
-### Getting started
+###### assets/
 
-####Part 1: Optimize PageSpeed Insights score for index.html
+Contains development CSS, JS and images, sorted into corresponding directories.
 
-Some useful tips to help you get started:
+###### public/build
 
-1. Check out the repository
-1. To inspect the site on your phone, you can run a local server
+Contains the production ready html, CSS, JS and images.
 
-  ```bash
-  $> cd /path/to/your-project-folder
-  $> python -m SimpleHTTPServer 8080
+## Build
+
+The Gulp.js is used to streamline the build process, including minification of scripts, style sheets and html, optimization of images.
+
+###### Install node modules with package.json
+
+```
+$ npm install 
+```
+
+###### build with gulpfile.js
+
+```
+$ gulp
+```
+
+
+## PageSpeed score
+
+##### 1. CSS
+ 
+Inline all of the CSS into the head of the index.html and added the HTML **media="print"** attribute to the link to print.css
+
+##### 2. JS
+
+Add the **Ascy** to all script tags and minify the javascript files.
+
+##### 3.Images
+
+Resizd images that were too large and compresse all images.
+
+##### 4.HTML
+
+Minify the html files
+
+### Getting Rid of Jank
+
+##### Reduce time to resize pizzas
+
+In the original function ```changePizzaSlice``` , The handler computes each image container’s ```width``` property based on the container’s ```offsetWidth``` value. This forces the browser to perform a new layout immediately to make sure that it provides the correct value. Also, the function ```determineDx``` is redundant. We can directly set the width instead of fisrt caculating the change of the width. This part is modifed as follow
+
+```js
+  function changePizzaSizes(size) {
+    var newWidth;
+    switch(size){
+      case "1":
+        newWidth = 25;
+        break;
+      case "2":
+        newWidth = 33.3;
+        break;
+      case "3":
+        newWidth = 50;
+        break;
+      default:
+        console.log("bug in sizeSwitcher")
+    };
+    var randomPizzas = document.querySelectorAll(".randomPizzaContainer");
+    for (var i = 0; i< randomPizzas.length;i++){
+      randomPizzas[i].style.wdith = newWidth + "%"
+    };
+  }
   ```
 
-1. Open a browser and visit localhost:8080
-1. Download and install [ngrok](https://ngrok.com/) to the top-level of your project directory to make your local server accessible remotely.
+##### Optimize Frame rate
 
-  ``` bash
-  $> cd /path/to/your-project-folder
-  $> ./ngrok http 8080
-  ```
+###### 1. stop forced synchronous layouts
+In the original ```updatePositions``` function, accessing ```body.scrollTop``` and set ```style.left``` in a loop also leads to forced synchronous layout. Thus, in the modification below, we read style values before the loop.
 
-1. Copy the public URL ngrok gives you and try running it through PageSpeed Insights! Optional: [More on integrating ngrok, Grunt and PageSpeed.](http://www.jamescryer.com/2014/06/12/grunt-pagespeed-and-ngrok-locally-testing/)
+```js
+var top = document.body.scrollTop / 1250;
+  var items = document.querySelectorAll('.mover');
+  for (var i = 0; i < items.length; i++) {
+    var phase = Math.sin((top) + (i % 5));
+    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+  }
+```
+###### 2. use RequestAnimationFrame
+Add the ```updatePositions``` function as a parameter to the ```window.requestAnimationFrame``` method in the scroll event listener.
 
-Profile, optimize, measure... and then lather, rinse, and repeat. Good luck!
+```js
+window.addEventListener('scroll', function() {
+	window.requestAnimationFrame(updatePositions);
+});
+```
 
-####Part 2: Optimize Frames per Second in pizza.html
 
-To optimize views/pizza.html, you will need to modify views/js/main.js until your frames per second rate is 60 fps or higher. You will find instructive comments in main.js. 
 
-You might find the FPS Counter/HUD Display useful in Chrome developer tools described here: [Chrome Dev Tools tips-and-tricks](https://developer.chrome.com/devtools/docs/tips-and-tricks).
 
-### Optimization Tips and Tricks
-* [Optimizing Performance](https://developers.google.com/web/fundamentals/performance/ "web performance")
-* [Analyzing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/analyzing-crp.html "analyzing crp")
-* [Optimizing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/optimizing-critical-rendering-path.html "optimize the crp!")
-* [Avoiding Rendering Blocking CSS](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-blocking-css.html "render blocking css")
-* [Optimizing JavaScript](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript.html "javascript")
-* [Measuring with Navigation Timing](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/measure-crp.html "nav timing api"). We didn't cover the Navigation Timing API in the first two lessons but it's an incredibly useful tool for automated page profiling. I highly recommend reading.
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads.html">The fewer the downloads, the better</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer.html">Reduce the size of text</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization.html">Optimize images</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching.html">HTTP caching</a>
 
-### Customization with Bootstrap
-The portfolio was built on Twitter's <a href="http://getbootstrap.com/">Bootstrap</a> framework. All custom styles are in `dist/css/portfolio.css` in the portfolio repo.
-
-* <a href="http://getbootstrap.com/css/">Bootstrap's CSS Classes</a>
-* <a href="http://getbootstrap.com/components/">Bootstrap's Components</a>
