@@ -28,7 +28,7 @@ gulp.task('optimize-images', function() {
 
 
 gulp.task('pack-html', function() {
-  return gulp.src(['*.html'])
+  return gulp.src(['assets/*.html'])
     .pipe(htmlmin({
       collapseWhitespace: true
     }))

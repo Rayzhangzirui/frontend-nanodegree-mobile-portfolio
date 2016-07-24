@@ -6,7 +6,7 @@ A project of Udacity's Front-End Web Developer Nanodegree. The task was to optim
 
 ###### assets/
 
-Contains development CSS, JS and images, sorted into corresponding directories.
+Contains development html, CSS, JS and images, sorted into corresponding directories.
 
 ###### public/build
 
